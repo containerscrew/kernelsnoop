@@ -1,6 +1,7 @@
 import requests
 from kernelsniffer.constants import Endpoints
 
+
 def get_public_ip_and_country():
     try:
         ip = requests.get(Endpoints.IP_API).text.strip()

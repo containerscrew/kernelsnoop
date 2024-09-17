@@ -1,9 +1,4 @@
-import notify2
-import requests
-import schedule
-import daemon
 import tomllib as toml
-import json
 from dataclasses import dataclass
 from dacite import from_dict
 
@@ -16,9 +11,11 @@ with open("config.toml", "rb") as f:
 
 # json_data = json.dumps(data, indent=2)
 
+
 @dataclass
 class DaemonSettings:
     enabled = bool
+
 
 @dataclass
 class Daemon:
