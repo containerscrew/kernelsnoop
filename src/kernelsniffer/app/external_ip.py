@@ -1,5 +1,5 @@
 import requests
-from kernelsniffer.constants import Endpoints
+from kernelsniffer.app.constants import Endpoints
 
 
 def get_public_ip_and_country():

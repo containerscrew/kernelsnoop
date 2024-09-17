@@ -8,7 +8,6 @@ country_api = "https://ifconfig.co/country"
 with open("config.toml", "rb") as f:
     data = toml.load(f)
 
-
 # json_data = json.dumps(data, indent=2)
 
 
