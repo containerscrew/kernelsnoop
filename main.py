@@ -1,30 +1,33 @@
-import tomllib as toml
-from dataclasses import dataclass
-from dacite import from_dict
+# import tomllib as toml
+# from dataclasses import dataclass
 
-ip_api = "https://ifconfig.co/ip"
-country_api = "https://ifconfig.co/country"
+# import daemon
+# import schedule
+# from dacite import from_dict
 
-with open("config.toml", "rb") as f:
-    data = toml.load(f)
+# ip_api = "https://ifconfig.co/ip"
+# country_api = "https://ifconfig.co/country"
 
-# json_data = json.dumps(data, indent=2)
+# with open("config.toml", "rb") as f:
+#     data = toml.load(f)
 
-
-@dataclass
-class DaemonSettings:
-    enabled = bool
+# # json_data = json.dumps(data, indent=2)
 
 
-@dataclass
-class Daemon:
-    settings: DaemonSettings
+# @dataclass
+# class DaemonSettings:
+#     enabled = bool
 
 
-user = from_dict(data_class=Daemon, data=data)
+# @dataclass
+# class Daemon:
+#     settings: DaemonSettings
 
 
-print(data.settings.enabled)
+# user = from_dict(data_class=Daemon, data=data)
+
+
+# print(data.settings.enabled)
 # json_obj = json.loads(json_data)
 # test = Daemon(**json_obj)
 # print(test.daemon.enabled)

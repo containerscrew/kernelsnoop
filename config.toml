@@ -1,2 +1,6 @@
 [daemon]
-enabled = false
+enabled = true
+stdout_path = "/tmp/kernelsnoop.log"
+stdeer_path = "/tmp/kernelsnoop.log"
+log_level = "INFO"
+notifications_enabled = true

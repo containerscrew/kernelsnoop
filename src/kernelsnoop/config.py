@@ -6,6 +6,10 @@ from dacite import from_dict
 @dataclass
 class DaemonSettings:
     enabled: bool
+    stdout_path: str
+    stdeer_path: str
+    log_level: str
+    notifications_enabled: bool
 
 
 @dataclass

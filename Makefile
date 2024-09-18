@@ -1,13 +1,13 @@
 SHELL:=/bin/sh
 .PHONY: all
 
-app_name="kernelsniffer"
+app_name="kernelsnoop"
 
 help: ## this help
 	@awk 'BEGIN {FS = ":.*?## ";  printf "Usage:\n  make \033[36m<target> \033[0m\n\nTargets:\n"} /^[a-zA-Z0-9_-]+:.*?## / {gsub("\\\\n",sprintf("\n%22c",""), $$2);printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 run: ## Execute the cli locally using poetry
-	poetry run python src/kernelsniffer/__main__.py
+	poetry run python src/kernelsnoop/__main__.py
 
 install: ## Install dependencies
 	poetry install
@@ -16,7 +16,7 @@ build: ## Build project using poetry
 	poetry build
 
 run-coverage: ## Run pytest with coverage
-	poetry run pytest --cov=kernelsniffer tests/
+	poetry run pytest --cov=kernelsnoop tests/
 
 publish: ## Publish package to pypi.org
 	poetry publish --build
