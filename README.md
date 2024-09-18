@@ -3,28 +3,19 @@
 <!-- START OF TOC !DO NOT EDIT THIS CONTENT MANUALLY-->
 **Table of Contents**  *generated with [mtoc](https://github.com/containerscrew/mtoc)*
 - [kernelsnoop](#kernelsnoop)
-- [Setup vscode interpreter for poetr](#setup-vscode-interpreter-for-poetr)
-- [Steps](#steps)
 - [Local development](#local-development)
   - [Requirements](#requirements)
+  - [Running kernelsnoop](#running-kernelsnoop)
+  - [Setup vscode interpreter for poetry](#setup-vscode-interpreter-for-poetry)
 <!-- END OF TOC -->
-# Setup vscode interpreter for poetr
-
-```shell
-poetry env info --path | pbcopy
-```
-
-# Steps
-
-```bash
-make install
-```
 
 # Local development
 
 ## Requirements
 
 * **Install poetry cli in your local machine!**
+
+## Running kernelsnoop
 
 ```bash
 git clone https://github.com/containerscrew/kernelsnoop.git
@@ -41,3 +32,11 @@ killall python3
 ```
 
 > Also take a look to the [Makefile](./Makefile). You will see some useful commands.
+
+
+## Setup vscode interpreter for poetry
+
+```shell
+poetry env info --path | pbcopy
+# now press CONTRL+SHIFT+P and setup the interpreter of the project to this path yoy copied in the previous command
+```
