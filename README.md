@@ -7,6 +7,7 @@
   - [Requirements](#requirements)
   - [Running kernelsnoop](#running-kernelsnoop)
   - [Setup vscode interpreter for poetry](#setup-vscode-interpreter-for-poetry)
+  - [pre-commit](#pre-commit)
 <!-- END OF TOC -->
 
 # Local development
@@ -39,4 +40,14 @@ killall python3
 ```shell
 poetry env info --path | pbcopy
 # now press CONTRL+SHIFT+P and setup the interpreter of the project to this path yoy copied in the previous command
+```
+
+## pre-commit
+
+Please, **install pre-commit before push your changes**
+
+```bash
+pre-commit install
+# or run once
+pre-commit run -a
 ```
