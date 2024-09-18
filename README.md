@@ -5,6 +5,8 @@
 - [kernelsnoop](#kernelsnoop)
 - [Setup vscode interpreter for poetr](#setup-vscode-interpreter-for-poetr)
 - [Steps](#steps)
+- [Local development](#local-development)
+  - [Requirements](#requirements)
 <!-- END OF TOC -->
 # Setup vscode interpreter for poetr
 
@@ -17,3 +19,23 @@ poetry env info --path | pbcopy
 ```bash
 make install
 ```
+
+# Local development
+
+## Requirements
+
+> **Install poetry cli in your local machine!**
+
+```bash
+git clone https://github.com/containerscrew/kernelsnoop.git
+cd kernelsnoop
+# make your changes
+poetry install
+poetry update
+# run the code
+poetry run python3 src/kernelsnoop/__main__.py
+# check version
+poetry run python3 src/kernelsnoop/__main__.py --version
+```
+
+> Also take a look to the [Makefile](./Makefile). You will see some useful commands.

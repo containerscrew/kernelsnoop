@@ -42,7 +42,7 @@ repos:
     rev: v0.3.2
     hooks:
       - id: mtoc
-        args: []
+        args: [ "-e", ".pytest_cache/"]
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.16.1
     hooks:
