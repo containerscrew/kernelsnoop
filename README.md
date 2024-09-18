@@ -24,7 +24,7 @@ make install
 
 ## Requirements
 
-> **Install poetry cli in your local machine!**
+* **Install poetry cli in your local machine!**
 
 ```bash
 git clone https://github.com/containerscrew/kernelsnoop.git
@@ -36,6 +36,8 @@ poetry update
 poetry run python3 src/kernelsnoop/__main__.py
 # check version
 poetry run python3 src/kernelsnoop/__main__.py --version
+# kill the process running in the foreground
+killall python3
 ```
 
 > Also take a look to the [Makefile](./Makefile). You will see some useful commands.
