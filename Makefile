@@ -23,3 +23,6 @@ generate-changelog: ## Generate changelog
 
 init-gitmoji: ## Init gitmoji (sudo npm i -g gitmoji-cli)
 	gitmoji --init
+
+run: ## Run the application
+	go generate cmd/gen.go && CGO_ENABLED=0 GOARCH=amd64 go build && sudo ./kernelsnoop
