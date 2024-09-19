@@ -1,12 +1,10 @@
-/*
-Copyright © 2024 containerscrew
-*/
 package main
 
 import (
-	"github.com/containerscrew/kernelsnoop/cmd"
+	"github.com/containerscrew/kernelsnoop/internal/ebpftools"
 )
 
+
 func main() {
-	cmd.Start()
+	ebpftools.StartNetworkSniffer()
 }
