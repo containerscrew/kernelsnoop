@@ -1,6 +1,6 @@
 import daemon
-import schedule
 from kernelsnoop.config import load_config
+from kernelsnoop.eBPF.hello_world import hello_world_ebpf
 from kernelsnoop.logger import init_logger
 from kernelsnoop.sys_notify import Notifier
 from kernelsnoop.args import parse_args
@@ -25,13 +25,14 @@ def main() -> None:
     if config.daemon.enabled:
         try:
             with daemon.DaemonContext(
-                stdout=open(config.daemon.stdout_path, "w+"),
-                stderr=open(config.daemon.stdeer_path, "w+"),
+                stdout=open(config.daemon.stdout_path, "a+"),
+                stderr=open(config.daemon.stdeer_path, "a+"),
             ):
                 log.info("Daemon started")
-                schedule.every(1).minutes.do(notifier.send_notification)
+                # schedule.every(1).minutes.do(notifier.send_notification)
                 while True:
-                    schedule.run_pending()
+                    hello_world_ebpf()
+                    # schedule.run_pending()
         except Exception as exc:
             log.error(f"An error occurred: {exc}")
     else:

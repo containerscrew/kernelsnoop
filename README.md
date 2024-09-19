@@ -22,6 +22,7 @@
 git clone https://github.com/containerscrew/kernelsnoop.git
 cd kernelsnoop
 # make your changes
+python3 -m venv --system-site-packages .venv # Allow use system libraries, like python-bcc
 poetry install
 poetry update
 # run the code
