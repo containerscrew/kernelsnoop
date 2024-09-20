@@ -1,6 +1,14 @@
-[daemon]
-enabled = true
-stdout_path = "/tmp/kernelsnoop.log"
-stdeer_path = "/tmp/kernelsnoop.log"
-log_level = "INFO"
-notifications_enabled = true
+# [agent]
+# daemonize = true
+# stdout_path = "/tmp/kernelsnoop.log"
+# stdeer_path = "/tmp/kernelsnoop.log"
+# pid_file = "/tmp/kernelsnoop.pid"
+
+
+# [notifications]
+# enabled = true
+
+
+[log]
+level = "INFO" # info, debug, warn, error, success, trace
+type = "pretty" # json, console, pretty

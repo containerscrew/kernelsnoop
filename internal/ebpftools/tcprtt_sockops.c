@@ -27,6 +27,7 @@ struct sk_key {
 	u32 remote_ip4;
 	u32 local_port;
 	u32 remote_port;
+	u32 pid;
 };
 
 struct sk_info {

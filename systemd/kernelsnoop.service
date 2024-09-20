@@ -1,0 +1,17 @@
+[Unit]
+Description=kernelsnoop
+After=network-online.target nss-lookup.target
+Wants=network-online.target nss-lookup.target
+
+[Service]
+ExecStart=/usr/local/bin/kernelsnoop
+Restart=on-failure
+User=root
+Group=root
+
+# Redirigir stdout y stderr a archivos diferentes
+StandardOutput=file:/tmp/kernelsnoop.log
+StandardError=file:/tmp/kernelsnoop.log
+
+[Install]
+WantedBy=multi-user.target
