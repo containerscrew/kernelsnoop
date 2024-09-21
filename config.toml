@@ -11,4 +11,9 @@
 
 [log]
 level = "INFO" # info, debug, warn, error, success, trace
-type = "pretty" # json, console, pretty
+type = "json" # json, console, pretty
+
+
+[syscall]
+enabled = true
+syscalls = ["sys_connect", "sys_execve" ]

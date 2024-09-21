@@ -28,7 +28,10 @@ generate-changelog: ## Generate changelog
 init-gitmoji: ## Init gitmoji (sudo npm i -g gitmoji-cli)
 	gitmoji --init
 
-run: ## Run the application
+go-generate: ## Run go generate
+	go generate ./internal/ebpftools/ksnoop_syscalls
+
+run: go-generate ## Run the application
 	CGO_ENABLED=0 GOARCH=amd64 go build && sudo ./kernelsnoop
 
 daemon-install: ## Install kernelsnoop in systemd
@@ -36,6 +39,3 @@ daemon-install: ## Install kernelsnoop in systemd
 	sudo cp systemd/kernelsnoop.service /etc/systemd/system/kernelsnoop.service ;\
 	sudo systemctl daemon-reload ;\
 	sudo systemctl start kernelsnoop
-
-go-generate: ## Run go generate
-	go generate ./internal/ebpftools

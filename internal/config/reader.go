@@ -12,6 +12,10 @@ type Config struct {
 		Level string `toml:"level"`
 		Type  string `toml:"type"`
 	}
+	Syscall struct {
+		Enabled bool `toml:"enabled"`
+		SysCalls []string `toml:"syscalls"`
+	}
 }
 
 func ReadConfigFile() (Config, error) {

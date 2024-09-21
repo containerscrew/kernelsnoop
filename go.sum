@@ -1,7 +1,7 @@
 github.com/cilium/ebpf v0.16.0 h1:+BiEnHL6Z7lXnlGUsXQPPAE7+kenAd4ES8MQ5min0Ok=
 github.com/cilium/ebpf v0.16.0/go.mod h1:L7u2Blt2jMM/vLAVgjxluxtBKlz3/GWjB0dMOEngfwE=
-github.com/containerscrew/devstdout v0.0.0-20240920124722-8a75fe309b37 h1:3H63jaP3u8H9T4AOrhcRQGE4Ul9mnW3wfaUODBHX9qk=
-github.com/containerscrew/devstdout v0.0.0-20240920124722-8a75fe309b37/go.mod h1:vsFRiaEO20hZecag7+lV1hDCLbun1zsgmLw86i1TtX4=
+github.com/containerscrew/devstdout v0.0.0-20240921181012-53a2d9c58b97 h1:nsa9qARwC0r4psNXEO58MmLBZ0CZg+sKxZeYZrF4qYA=
+github.com/containerscrew/devstdout v0.0.0-20240921181012-53a2d9c58b97/go.mod h1:qivX4vQCCaDLhLXXma2qzQMFAvF6xJQOqa4//2IDSSo=
 github.com/fatih/color v1.17.0 h1:GlRw1BRJxkpqUCBKzKOw098ed57fEsKeNjpTe3cSjK4=
 github.com/fatih/color v1.17.0/go.mod h1:YZ7TlrGPkiz6ku9fK3TLD/pl3CpsiFyu8N92HLgmosI=
 github.com/go-quicktest/qt v1.101.0 h1:O1K29Txy5P2OK0dGo59b7b0LR6wKfIhttaAhHUyn7eI=

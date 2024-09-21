@@ -8,6 +8,7 @@
   - [Running kernelsnoop](#running-kernelsnoop)
   - [Setup vscode interpreter for poetry](#setup-vscode-interpreter-for-poetry)
   - [pre-commit](#pre-commit)
+  - [Stuff](#stuff)
 <!-- END OF TOC -->
 
 # Local development
@@ -51,4 +52,13 @@ Please, **install pre-commit before push your changes**
 pre-commit install
 # or run once
 pre-commit run -a
+```
+
+## Stuff
+
+
+Generate `vmlinux.h`:
+
+```bash
+bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
 ```
