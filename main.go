@@ -25,6 +25,6 @@ func main() {
 
 	// Here I need to start the NewEbpfLoader(ctx) function and pass the ctx as an argument, and the C code will use to load and inject
 	if config.Syscall.Enabled {
-		ksnoop_syscalls.SyscallHello(ctx, config.Syscall.SysCalls)
+		ksnoop_syscalls.SyscallHello(ctx)
 	}
 }

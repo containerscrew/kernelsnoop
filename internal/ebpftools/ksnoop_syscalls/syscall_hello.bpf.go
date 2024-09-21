@@ -9,67 +9,57 @@ import (
 	"github.com/cilium/ebpf/link"
 	"github.com/cilium/ebpf/rlimit"
 	logger "github.com/containerscrew/devstdout/pkg"
-	"golang.org/x/sys/unix"
 )
 
 const mapKey uint32 = 0
 
 type ConnectionInfo struct {
-    Pid  uint64 // PID
-    Comm [16]byte // Process name (TASK_COMM_LEN)
+	Pid  uint64 // Change to uint64
+	Comm [16]byte
 }
 
-func SyscallHello(ctx context.Context, syscalls []string) {
-    // Retrieve the logger from the context
-    log, _ := ctx.Value("log").(*logger.CustomLogger)
+func SyscallHello(ctx context.Context) {
+	// First step: retrieve the log from the context
+	log, _ := ctx.Value("log").(*logger.CustomLogger)
 
-    log.Info("Starting syscall tracer")
+	log.Info("Starting syscall hello tracer")
+	fn := "sys_connect"
 
-    // Allow the current process to lock memory for eBPF resources.
-    if err := rlimit.RemoveMemlock(); err != nil {
-        log.Error(fmt.Sprintf("failed to remove memlock rlimit: %v. Consider using sudo or give necessary capabilities to the program", err))
-        return
-    }
+	// Allow the current process to lock memory for eBPF resources.
+	if err := rlimit.RemoveMemlock(); err != nil {
+		log.Error(fmt.Sprintf("failed to remove memlock rlimit: %v. Consider using sudo or give necessary capabilities to the program", err))
+	}
 
-    // Load pre-compiled programs and maps into the kernel.
-    objs := bpfObjects{}
-    if err := loadBpfObjects(&objs, nil); err != nil {
-        log.Error(fmt.Sprintf("failed to load BPF objects: %v", err))
-        return
-    }
-    defer objs.Close()
+	// Load pre-compiled programs and maps into the kernel.
+	objs := bpfObjects{}
+	if err := loadBpfObjects(&objs, nil); err != nil {
+		log.Error(fmt.Sprintf("failed to load BPF objects: %v", err))
+	}
+	defer objs.Close()
 
-    // Open kprobes for each syscall
-    var kprobes []link.Link
-    for _, fn := range syscalls {
-        kp, err := link.Kprobe(fn, objs.KprobeSysConnect, nil) // Ensure this matches the compiled BPF program's name
-        if err != nil {
-            log.Error(fmt.Sprintf("failed to open kprobe for %s: %v", fn, err))
-            continue
-        }
-        kprobes = append(kprobes, kp)
-    }
+	// Open a Kprobe at the entry point of the kernel function
+	kp, err := link.Kprobe(fn, objs.KprobeSysConnect, nil)
+	if err != nil {
+		log.Error(fmt.Sprintf("failed to open kprobe: %v", err))
+	}
+	defer kp.Close()
 
-    // Read loop reporting syscall information
-    ticker := time.NewTicker(1 * time.Second)
-    defer ticker.Stop()
+	// Read loop reporting the total amount of times the kernel function was entered
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
 
-    log.Info("Waiting for events")
+	log.Info("Waiting for events")
 
-    for range ticker.C {
-        key := getCurrentPID() // Function to get the current PID
-        var info ConnectionInfo
-        if err := objs.KprobeMap.Lookup(key, &info); err != nil {
-            log.Error(fmt.Sprintf("failed to lookup kprobe map value for PID %d: %v", key, err))
-            continue
-        }
+	for range ticker.C {
+		var info ConnectionInfo
+		if err := objs.KprobeMap.Lookup(mapKey, &info); err != nil {
+			log.Error("failed to lookup kprobe map value")
+			continue
+		}
 
-        log.Info(fmt.Sprintf("systemcall executed by program %s and PID %d", string(bytes.Trim(info.Comm[:], "\x00")), info.Pid))
-    }
-}
-
-// Implement getCurrentPID to return the current process PID
-func getCurrentPID() uint32 {
-    pid := uint32(unix.Getpid()) // Retrieve the current process PID
-    return pid
+		log.Info("syscall called",
+			logger.PrintMessage("process", string(bytes.Trim(info.Comm[:], "\x00"))), // Trim null characters
+			logger.PrintMessage("pid", info.Pid),
+		)
+	}
 }
