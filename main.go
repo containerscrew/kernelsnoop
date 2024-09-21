@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-
 	logger "github.com/containerscrew/devstdout/pkg"
 	"github.com/containerscrew/kernelsnoop/internal/config"
 	"github.com/containerscrew/kernelsnoop/internal/ebpftools"
@@ -21,7 +19,8 @@ func main() {
 
 	log.Info("Starting kernelsnoop")
 
-	ctx := context.WithValue(context.Background(), "logger", log)
+	// ctx := context.WithValue(context.Background(), "logger", log)
 
-	ebpftools.StartNetworkSniffer(ctx)
+	// Here I need to start the NewEbpfLoader(ctx) function and pass the ctx as an argument, and the C code will use to load and inject
+	ebpftools.NewHelloWorld()
 }

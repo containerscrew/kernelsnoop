@@ -36,3 +36,6 @@ daemon-install: ## Install kernelsnoop in systemd
 	sudo cp systemd/kernelsnoop.service /etc/systemd/system/kernelsnoop.service ;\
 	sudo systemctl daemon-reload ;\
 	sudo systemctl start kernelsnoop
+
+go-generate: ## Run go generate
+	go generate ./internal/ebpftools
