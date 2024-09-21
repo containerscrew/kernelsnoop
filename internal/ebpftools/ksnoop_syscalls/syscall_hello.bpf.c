@@ -4,7 +4,6 @@
 #include <bpf/bpf_helpers.h>
 
 char __license[] SEC("license") = "Dual MIT/GPL";
-
 struct connection_info {
     u64 pid; // Change to u64
     char comm[TASK_COMM_LEN];

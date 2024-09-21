@@ -1,0 +1,71 @@
+package ksnoop_permissions
+
+import (
+	"bytes"
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/cilium/ebpf/link"
+	"github.com/cilium/ebpf/rlimit"
+	logger "github.com/containerscrew/devstdout/pkg"
+	"github.com/containerscrew/kernelsnoop/internal/ebpftools/utils"
+)
+
+type ProcessInfo struct {
+	Pid  uint32
+	Uid  uint32
+	Comm [16]byte
+}
+
+func SyscallHello(ctx context.Context) {
+	// Retrieve the logger from the context
+	log, _ := ctx.Value("log").(*logger.CustomLogger)
+
+	log.Info("Starting syscall hello tracer")
+	fn := "sys_execve"
+
+	// Allow the current process to lock memory for eBPF resources
+	if err := rlimit.RemoveMemlock(); err != nil {
+		log.Error(fmt.Sprintf("failed to remove memlock rlimit: %v. Consider using sudo or give necessary capabilities to the program", err))
+	}
+
+	// Load pre-compiled BPF programs and maps into the kernel
+	objs := test_bpfObjects{}
+	if err := loadTest_bpfObjects(&objs, nil); err != nil {
+		log.Error(fmt.Sprintf("failed to load BPF objects: %v", err))
+	}
+	defer objs.Close()
+
+	// Attach a Kprobe to the kernel function
+	kp, err := link.Kprobe(fn, objs.KprobeProcess, nil)
+	if err != nil {
+		log.Error(fmt.Sprintf("failed to open kprobe: %v", err))
+	}
+	defer kp.Close()
+
+	// Loop to read from the map and report the number of times the syscall was called
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		var key uint64
+		var processInfo ProcessInfo
+
+		// Create an iterator for the map
+		iter := objs.KprobeMap.Iterate()
+		for iter.Next(&key, &processInfo) {
+			log.Info("syscall called",
+				logger.PrintMessage("pid", fmt.Sprintf("%v", processInfo.Pid)),
+				logger.PrintMessage("uid", fmt.Sprintf("%v", processInfo.Uid)),
+				logger.PrintMessage("username", utils.GetUsername(processInfo.Uid)),             // Add username lookup
+				logger.PrintMessage("process", string(bytes.Trim(processInfo.Comm[:], "\x00"))), // Trim null characters
+			)
+		}
+
+		// Check for errors during map iteration
+		if err := iter.Err(); err != nil {
+			log.Error(fmt.Sprintf("error while iterating over BPF map: %v", err))
+		}
+	}
+}

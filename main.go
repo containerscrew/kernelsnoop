@@ -5,7 +5,7 @@ import (
 
 	logger "github.com/containerscrew/devstdout/pkg"
 	"github.com/containerscrew/kernelsnoop/internal/config"
-	"github.com/containerscrew/kernelsnoop/internal/ebpftools/ksnoop_syscalls"
+	"github.com/containerscrew/kernelsnoop/internal/ebpftools/ksnoop_permissions"
 )
 
 func main() {
@@ -25,6 +25,6 @@ func main() {
 
 	// Here I need to start the NewEbpfLoader(ctx) function and pass the ctx as an argument, and the C code will use to load and inject
 	if config.Syscall.Enabled {
-		ksnoop_syscalls.SyscallHello(ctx)
+		ksnoop_permissions.SyscallHello(ctx)
 	}
 }

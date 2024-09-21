@@ -9,6 +9,7 @@
   - [Setup vscode interpreter for poetry](#setup-vscode-interpreter-for-poetry)
   - [pre-commit](#pre-commit)
   - [Stuff](#stuff)
+- [Ideas](#ideas)
 <!-- END OF TOC -->
 
 # Local development
@@ -62,3 +63,9 @@ Generate `vmlinux.h`:
 ```bash
 bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
 ```
+
+# Ideas
+
+1. User Activity Monitor
+2. Network connection tracker
+3. Real-Time File Access Watchdog
