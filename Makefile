@@ -29,8 +29,7 @@ init-gitmoji: ## Init gitmoji (sudo npm i -g gitmoji-cli)
 	gitmoji --init
 
 go-generate: ## Run go generate
-	go generate ./internal/ebpftools/ksnoop_permissions ;\
-	go generate ./internal/ebpftools/ksnoop_syscalls
+	go generate ./internal/ksnoop/
 
 run: go-generate ## Run the application
 	CGO_ENABLED=0 GOARCH=amd64 go build && sudo ./kernelsnoop
