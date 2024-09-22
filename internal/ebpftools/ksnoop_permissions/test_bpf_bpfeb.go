@@ -15,6 +15,7 @@ import (
 type test_bpfProcessInfo struct {
 	Pid  uint32
 	Uid  uint32
+	Gid  uint32
 	Comm [16]int8
 }
 

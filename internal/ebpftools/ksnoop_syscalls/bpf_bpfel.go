@@ -12,8 +12,10 @@ import (
 	"github.com/cilium/ebpf"
 )
 
-type bpfConnectionInfo struct {
-	Pid  uint64
+type bpfProcessInfo struct {
+	Pid  uint32
+	Uid  uint32
+	Gid  uint32
 	Comm [16]int8
 }
 
@@ -58,7 +60,8 @@ type bpfSpecs struct {
 //
 // It can be passed ebpf.CollectionSpec.Assign.
 type bpfProgramSpecs struct {
-	KprobeSysConnect *ebpf.ProgramSpec `ebpf:"kprobe_sys_connect"`
+	KprobeProcessClone  *ebpf.ProgramSpec `ebpf:"kprobe_process_clone"`
+	KprobeProcessExecve *ebpf.ProgramSpec `ebpf:"kprobe_process_execve"`
 }
 
 // bpfMapSpecs contains maps before they are loaded into the kernel.
@@ -100,12 +103,14 @@ func (m *bpfMaps) Close() error {
 //
 // It can be passed to loadBpfObjects or ebpf.CollectionSpec.LoadAndAssign.
 type bpfPrograms struct {
-	KprobeSysConnect *ebpf.Program `ebpf:"kprobe_sys_connect"`
+	KprobeProcessClone  *ebpf.Program `ebpf:"kprobe_process_clone"`
+	KprobeProcessExecve *ebpf.Program `ebpf:"kprobe_process_execve"`
 }
 
 func (p *bpfPrograms) Close() error {
 	return _BpfClose(
-		p.KprobeSysConnect,
+		p.KprobeProcessClone,
+		p.KprobeProcessExecve,
 	)
 }
 
