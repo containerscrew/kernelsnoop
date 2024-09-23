@@ -23,5 +23,5 @@ func main() {
 
 	ctx := context.WithValue(context.Background(), "log", log)
 
-	ksnoop.ProcessMonitor(ctx)
+	ksnoop.NetworkMonitor(ctx)
 }

@@ -2,8 +2,10 @@
 
 #include "headers/vmlinux.h"
 #include <bpf/bpf_helpers.h>
+#include <linux/version.h>
 
 char __license[] SEC("license") = "Dual MIT/GPL";
+__u32 __version SEC("version") = LINUX_VERSION_CODE;
 
 struct process_info {
     u32 pid;                       // Process ID
