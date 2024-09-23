@@ -23,8 +23,5 @@ func main() {
 
 	ctx := context.WithValue(context.Background(), "log", log)
 
-	// Here I need to start the NewEbpfLoader(ctx) function and pass the ctx as an argument, and the C code will use to load and inject
-	if config.Syscall.Enabled {
-		ksnoop.ProcessMonitor(ctx)
-	}
+	ksnoop.ProcessMonitor(ctx)
 }

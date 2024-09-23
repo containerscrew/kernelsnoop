@@ -29,13 +29,16 @@ init-gitmoji: ## Init gitmoji (sudo npm i -g gitmoji-cli)
 	gitmoji --init
 
 go-generate: ## Run go generate
-	go generate ./internal/ksnoop/
+	go generate ./internal/ksnoop/generates
 
 run: go-generate ## Run the application
-	CGO_ENABLED=0 GOARCH=amd64 go build && sudo ./kernelsnoop
+	CGO_ENABLED=0 GOARCH=amd64 sudo go run main.go
 
 daemon-install: ## Install kernelsnoop in systemd
 	CGO_ENABLED=0 GOARCH=amd64 go build && sudo cp kernelsnoop /usr/local/bin/kernelsnoop ;\
 	sudo cp systemd/kernelsnoop.service /etc/systemd/system/kernelsnoop.service ;\
 	sudo systemctl daemon-reload ;\
 	sudo systemctl start kernelsnoop
+
+gen-vmlinux: ## Generate vmlinux.h headers
+	sudo bpftool btf dump file /sys/kernel/btf/vmlinux format c > ./internal/ksnoop/headers/vmlinux.h

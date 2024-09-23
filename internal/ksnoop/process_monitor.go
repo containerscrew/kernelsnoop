@@ -9,6 +9,7 @@ import (
 	"github.com/cilium/ebpf/link"
 	"github.com/cilium/ebpf/rlimit"
 	logger "github.com/containerscrew/devstdout/pkg"
+	"github.com/containerscrew/kernelsnoop/internal/ksnoop/generates"
 	"github.com/containerscrew/kernelsnoop/internal/ksnoop/utils"
 )
 
@@ -23,7 +24,7 @@ func ProcessMonitor(ctx context.Context) {
 	// Retrieve the logger from the context
 	log, _ := ctx.Value("log").(*logger.CustomLogger)
 
-	log.Info("Starting syscall hello tracer")
+	log.Info("Starting process monitor")
 	fn := "sys_execve"
 
 	// Allow the current process to lock memory for eBPF resources
@@ -32,8 +33,8 @@ func ProcessMonitor(ctx context.Context) {
 	}
 
 	// Load pre-compiled BPF programs and maps into the kernel
-	objs := process_monitor_bpfObjects{}
-	if err := loadProcess_monitor_bpfObjects(&objs, nil); err != nil {
+	objs := generates.Process_monitor_bpfObjects{}
+	if err := generates.LoadProcess_monitor_bpfObjects(&objs, nil); err != nil {
 		log.Error(fmt.Sprintf("failed to load BPF objects: %v", err))
 	}
 	defer objs.Close()

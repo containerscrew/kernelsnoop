@@ -1,5 +1,12 @@
 # kernelsnoop
 
+What's going on down there? Kernel sniffing using eBPF.
+
+I want to learn how to create my own applications to simply monitor my computer. I don't know how far this will go.
+
+I am practicing everything I learned in [this book](https://isovalent.com/books/learning-ebpf).
+
+
 <!-- START OF TOC !DO NOT EDIT THIS CONTENT MANUALLY-->
 **Table of Contents**  *generated with [mtoc](https://github.com/containerscrew/mtoc)*
 - [kernelsnoop](#kernelsnoop)
@@ -14,7 +21,9 @@
 
 ## Requirements
 
-**pending to add**
+System package dependencies are **MANDATORY**.
+
+Since I'm using the framework `ebpf-go` from Cilium, see the [required dependencies](https://ebpf-go.dev/guides/getting-started/#ebpf-c-program) in their official documentation.
 
 
 ## pre-commit
@@ -32,13 +41,19 @@ pre-commit run -a
 * Generate `vmlinux.h`:
 
 ```bash
-bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
+bpftool btf dump file /sys/kernel/btf/vmlinux format c > internal/headers/vmlinux.h
 ```
 
 * Look for available tracepoints:
 
 ```bash
 sudo bpftrace -l 'tracepoint:*'
+```
+
+* Other:
+
+```bash
+sudo cat /sys/kernel/debug/tracing/events/ext4/ext4_free_inode/format
 ```
 
 # Ideas
