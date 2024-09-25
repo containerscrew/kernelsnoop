@@ -23,5 +23,5 @@ func main() {
 
 	ctx := context.WithValue(context.Background(), "log", log)
 
-	ksnoop.PermissionMonitor(ctx)
+	ksnoop.ShellReadline(ctx)
 }

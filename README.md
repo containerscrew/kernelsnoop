@@ -15,6 +15,7 @@ I am practicing everything I learned in [this book](https://isovalent.com/books/
   - [pre-commit](#pre-commit)
   - [Stuff](#stuff)
 - [Ideas](#ideas)
+- [Useful links](#useful-links)
 <!-- END OF TOC -->
 
 # Local development
@@ -61,3 +62,10 @@ sudo cat /sys/kernel/debug/tracing/events/ext4/ext4_free_inode/format
 1. User Activity Monitor
 2. Network connection tracker
 3. Real-Time File Access Watchdog
+
+
+# Useful links
+
+* https://nvd.codes/post/monitor-any-command-typed-at-a-shell-with-ebpf/
+* https://eunomia.dev/
+* https://github.com/cilium/ebpf

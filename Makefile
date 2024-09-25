@@ -31,7 +31,7 @@ init-gitmoji: ## Init gitmoji (sudo npm i -g gitmoji-cli)
 go-generate: ## Run go generate
 	go generate ./internal/ksnoop/generates
 
-run: go-generate ## Run the application
+run: go-generate update-deps ## Run the application
 	CGO_ENABLED=0 GOARCH=amd64 sudo go run main.go
 
 daemon-install: ## Install kernelsnoop in systemd
