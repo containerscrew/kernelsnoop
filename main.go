@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 
-	logger "github.com/containerscrew/devstdout/pkg"
+	devstdout "github.com/containerscrew/devstdout/pkg"
 	"github.com/containerscrew/kernelsnoop/internal/config"
-	"github.com/containerscrew/kernelsnoop/internal/ksnoop"
+	ksnoop_tcp_connect "github.com/containerscrew/kernelsnoop/internal/ksnoop/tcp_connect"
 )
 
 func main() {
@@ -15,13 +15,13 @@ func main() {
 		panic(err)
 	}
 
-	log := logger.NewLogger(
-		logger.OptionsLogger{Level: config.Log.Level, AddSource: false, LoggerType: config.Log.Type},
+	log := devstdout.NewLogger(
+		devstdout.OptionsLogger{Level: config.Log.Level, AddSource: false, LoggerType: config.Log.Type},
 	)
 
 	log.Info("Starting kernelsnoop")
 
 	ctx := context.WithValue(context.Background(), "log", log)
 
-	ksnoop.ShellReadline(ctx)
+	ksnoop_tcp_connect.TcpConnect(ctx)
 }

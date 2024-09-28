@@ -10,6 +10,8 @@ I am practicing everything I learned in [this book](https://isovalent.com/books/
 <!-- START OF TOC !DO NOT EDIT THIS CONTENT MANUALLY-->
 **Table of Contents**  *generated with [mtoc](https://github.com/containerscrew/mtoc)*
 - [kernelsnoop](#kernelsnoop)
+- [About](#about)
+- [Available tools](#available-tools)
 - [Local development](#local-development)
   - [Requirements](#requirements)
   - [pre-commit](#pre-commit)
@@ -17,6 +19,15 @@ I am practicing everything I learned in [this book](https://isovalent.com/books/
 - [Ideas](#ideas)
 - [Useful links](#useful-links)
 <!-- END OF TOC -->
+
+# About
+
+...pending to add
+
+# Available tools
+
+* Shell readline: read every user command for bash, zsh and sh.
+* In progress: file access. Read file, access to a file, write a file.
 
 # Local development
 

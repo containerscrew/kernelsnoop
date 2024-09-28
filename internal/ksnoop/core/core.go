@@ -1,60 +1,73 @@
-// // Some helper functions for the core of ksnoop.
+// Some helper functions for the core of ksnoop.
+
+// This was an intention to separate the code to avoid code duplication, but it was not used in the initial version.
+
 // package core
 
 // import (
-// 	"context"
 // 	"fmt"
 // 	"os"
 // 	"os/signal"
 // 	"syscall"
 
-// 	"github.com/cilium/ebpf/perf"
+// 	"github.com/cilium/ebpf"
+// 	"github.com/cilium/ebpf/link"
+// 	"github.com/cilium/ebpf/ringbuf"
 // 	"github.com/cilium/ebpf/rlimit"
-// 	logger "github.com/containerscrew/devstdout/pkg"
-// 	"github.com/containerscrew/kernelsnoop/internal/ksnoop/generates"
+// 	devstdout "github.com/containerscrew/devstdout/pkg"
 // )
 
-// // EbpfProgram represents an eBPF program with its associated functionality
-// type EbpfProgram struct {
-// 	log     *logger.CustomLogger
-// 	objs    generates.ShellReadlineObjects
-// 	rd      *perf.Reader
-// 	stopper chan os.Signal
+// type EbpfHandler struct {
+// 	rd  *ringbuf.Reader
+// 	log *devstdout.CustomLogger
 // }
 
-// // NewEbpfProgram creates a new eBPF program, sets up rlimit, loads objects, and returns the program
-// func NewEbpfProgram(ctx context.Context, objs struct{}) (*EbpfProgram, error) {
-// 	log, _ := ctx.Value("log").(*logger.CustomLogger)
-
-// 	// Remove memory lock limit for eBPF resources
+// // NewFileHandler es el constructor para FileHandler
+// func NewEbpfHandler(log *devstdout.CustomLogger) *EbpfHandler {
+// 	// Allow the current process to lock memory for eBPF resources
 // 	if err := rlimit.RemoveMemlock(); err != nil {
-// 		log.Error(fmt.Sprintf("failed to remove memlock rlimit: %v. Check permissions", err))
-// 		return nil, err
+// 		log.Error(fmt.Sprintf("failed to remove memlock rlimit: %v. Consider using sudo or give necessary capabilities to the program", err))
 // 	}
 
-// 	// Load pre-compiled BPF programs and maps into the kernel
-// 	//objs := generates.ShellReadlineObjects{}
-// 	if err := generates.LoadShellReadlineObjects(&objs, nil); err != nil {
-// 		log.Error(fmt.Sprintf("failed to load BPF objects: %v", err))
-// 		return nil, err
+// 	return &EbpfHandler{
+// 		log: log,
 // 	}
-
-// 	return &EbpfProgram{
-// 		log:     log,
-// 		stopper: make(chan os.Signal, 1),
-// 	}, nil
 // }
 
-// func (p *EbpfProgram) WaitForSignal() {
-// 	signal.Notify(p.stopper, os.Interrupt, syscall.SIGTERM)
+// func (e *EbpfHandler) AttachTracingLink(program *ebpf.Program) {
+// 	link, err := link.AttachTracing(link.TracingOptions{
+// 		Program: program,
+// 	})
+// 	if err != nil {
+// 		e.log.Error(fmt.Sprintf("failed to attach kprobe link: %v", err))
+// 	}
+// 	defer link.Close()
+// }
 
+// func (e *EbpfHandler) NewRingBufferReader(events *ebpf.Map) {
+// 	rd, err := ringbuf.NewReader(events)
+// 	if err != nil {
+// 		e.log.Error(fmt.Sprintf("failed to create ring buffer reader: %v", err))
+// 	}
+// 	defer rd.Close()
+// 	e.rd = rd
+// }
+
+// func (e *EbpfHandler) ReadEvents(events interface{}) {
+// 	var event events
+// }
+
+// func (e *EbpfHandler) HandleSignals() {
+// 	// Subscribe to signals for terminating the program.
+// 	stopper := make(chan os.Signal, 1)
+// 	signal.Notify(stopper, os.Interrupt, syscall.SIGTERM)
+
+// 	// Close resources when the program exits.
 // 	go func() {
-// 		<-p.stopper
-// 		p.log.Warning("Received signal, exiting program..")
-
-// 		if err := p.rd.Close(); err != nil {
-// 			p.log.Error(fmt.Sprintf("closing perf event reader: %s", err))
+// 		<-stopper
+// 		if err := e.rd.Close(); err != nil {
+// 			e.log.Error("closing perf event reader: %s", err)
 // 		}
-// 		p.objs.Close()
+// 		e.log.Warning("Received signal, exiting program...")
 // 	}()
 // }
