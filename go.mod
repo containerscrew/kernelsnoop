@@ -4,7 +4,7 @@ go 1.23.1
 
 require (
 	github.com/cilium/ebpf v0.16.0
-	github.com/containerscrew/devstdout v0.2.0
+	github.com/containerscrew/devstdout v0.3.0
 	github.com/pelletier/go-toml v1.9.5
 )
 

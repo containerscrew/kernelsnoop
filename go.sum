@@ -1,7 +1,7 @@
 github.com/cilium/ebpf v0.16.0 h1:+BiEnHL6Z7lXnlGUsXQPPAE7+kenAd4ES8MQ5min0Ok=
 github.com/cilium/ebpf v0.16.0/go.mod h1:L7u2Blt2jMM/vLAVgjxluxtBKlz3/GWjB0dMOEngfwE=
-github.com/containerscrew/devstdout v0.2.0 h1:v2FQqm7gdEnyrg+DE+8bbNzTx4HrqsY3xmfuLkVQsjY=
-github.com/containerscrew/devstdout v0.2.0/go.mod h1:qivX4vQCCaDLhLXXma2qzQMFAvF6xJQOqa4//2IDSSo=
+github.com/containerscrew/devstdout v0.3.0 h1:WvL3ezp8Ul4B+BRRAP0+txcZWfzqlZZxq6gNiVrmNCo=
+github.com/containerscrew/devstdout v0.3.0/go.mod h1:qivX4vQCCaDLhLXXma2qzQMFAvF6xJQOqa4//2IDSSo=
 github.com/fatih/color v1.17.0 h1:GlRw1BRJxkpqUCBKzKOw098ed57fEsKeNjpTe3cSjK4=
 github.com/fatih/color v1.17.0/go.mod h1:YZ7TlrGPkiz6ku9fK3TLD/pl3CpsiFyu8N92HLgmosI=
 github.com/gen2brain/beeep v0.0.0-20240516210008-9c006672e7f4 h1:ygs9POGDQpQGLJPlq4+0LBUmMBNox1N4JSpw+OETcvI=

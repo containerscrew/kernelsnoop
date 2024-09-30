@@ -45,3 +45,9 @@ daemon-install: ## Install kernelsnoop in systemd
 
 gen-vmlinux: ## Generate vmlinux.h headers
 	sudo bpftool btf dump file /sys/kernel/btf/vmlinux format c > ./internal/ksnoop/headers/vmlinux.h
+
+compose-up-build: ## Run docker-compose up and build
+	docker-compose -f docker/compose.yml up -d --build
+
+compose-up: ## Run docker-compose up
+	docker-compose -f docker/compose.yml up -d --force-recreate

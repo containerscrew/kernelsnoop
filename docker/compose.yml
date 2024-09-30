@@ -1,0 +1,55 @@
+# compose.yaml
+services:
+  kernelsnoop:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    cap_add:
+      - CAP_NET_ADMIN
+      - CAP_BPF
+      - CAP_PERFMON
+    container_name: kernelsnoop
+
+  grafana:
+    image: docker.io/grafana/grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=grafana
+    volumes:
+      - grafana-datasources:/etc/grafana/provisioning/datasources
+      - grafana-storage:/var/lib/grafana
+
+  loki:
+      image: docker.io/grafana/loki:latest
+      container_name: loki
+      ports:
+        - 3100:3100
+      volumes:
+        - ./loki-config.yaml:/etc/loki/loki-config.yaml
+      command: -config.file=/etc/loki/loki-config.yaml
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - ./promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      - /var/lib/docker/:/var/lib/docker:ro
+    container_name: promtail
+    command: -config.file=/etc/promtail/promtail-config.yaml
+
+# secrets:
+#   influxdb2-admin-username:
+#     file: .env/.env.influxdb2-admin-username
+#   influxdb2-admin-password:
+#     file: .env/.env.influxdb2-admin-password
+#   influxdb2-admin-token:
+#     file: .env/.env.influxdb2-admin-token
+
+volumes:
+  # loki:
+  # promtail:
+  grafana-datasources:
+  grafana-storage:

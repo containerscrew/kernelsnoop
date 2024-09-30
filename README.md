@@ -68,6 +68,12 @@ sudo bpftrace -l 'tracepoint:*'
 sudo cat /sys/kernel/debug/tracing/events/ext4/ext4_free_inode/format
 ```
 
+* Stuff
+
+```
+curl -sL ip.guide/bulk/asns.csv
+```
+
 # Ideas
 
 1. User Activity Monitor
@@ -80,3 +86,5 @@ sudo cat /sys/kernel/debug/tracing/events/ext4/ext4_free_inode/format
 * https://nvd.codes/post/monitor-any-command-typed-at-a-shell-with-ebpf/
 * https://eunomia.dev/
 * https://github.com/cilium/ebpf
+* https://docs.fluentbit.io/manual/pipeline/outputs/influxdb
+* https://docs.influxdata.com/influxdb/v2/install/use-docker-compose/
