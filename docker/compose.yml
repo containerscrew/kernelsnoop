@@ -9,6 +9,9 @@ services:
       - CAP_BPF
       - CAP_PERFMON
     container_name: kernelsnoop
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
 
   grafana:
     image: docker.io/grafana/grafana
@@ -19,9 +22,13 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=grafana
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     volumes:
       - grafana-datasources:/etc/grafana/provisioning/datasources
       - grafana-storage:/var/lib/grafana
+      - ./data-sources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
 
   loki:
       image: docker.io/grafana/loki:latest
@@ -37,6 +44,7 @@ services:
     volumes:
       - ./promtail-config.yaml:/etc/promtail/promtail-config.yaml
       - /var/lib/docker/:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock
     container_name: promtail
     command: -config.file=/etc/promtail/promtail-config.yaml
 

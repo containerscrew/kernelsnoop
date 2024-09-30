@@ -88,3 +88,4 @@ curl -sL ip.guide/bulk/asns.csv
 * https://github.com/cilium/ebpf
 * https://docs.fluentbit.io/manual/pipeline/outputs/influxdb
 * https://docs.influxdata.com/influxdb/v2/install/use-docker-compose/
+* https://github.com/ruanbekker/docker-promtail-loki/tree/main
