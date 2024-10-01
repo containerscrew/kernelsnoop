@@ -8,7 +8,7 @@ WORKDIR /go/src/app
 
 COPY . .
 
-RUN go mod download
+RUN go mod download && go generate
 RUN CGO_ENABLED=0 go build -o /go/bin/app/kernelsnoop
 
 # Now copy it into our base image.

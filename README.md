@@ -74,6 +74,14 @@ sudo cat /sys/kernel/debug/tracing/events/ext4/ext4_free_inode/format
 curl -sL ip.guide/bulk/asns.csv
 ```
 
+```
+{container="kernelsnoop"} |= "new connection"
+| json
+| latitude != 0.0
+| longitude != 0.0
+| line_format "{{.dst_addr}},{{.latitude}},{{.longitude}}"
+```
+
 # Ideas
 
 1. User Activity Monitor

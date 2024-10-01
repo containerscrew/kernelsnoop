@@ -47,10 +47,14 @@ gen-vmlinux: ## Generate vmlinux.h headers
 	sudo bpftool btf dump file /sys/kernel/btf/vmlinux format c > ./internal/ksnoop/headers/vmlinux.h
 
 compose-up-build: ## Run docker-compose up and build
-	docker-compose -f docker/compose.yml up -d --build
+	docker-compose -f docker/compose.yml up -d --build --force-recreate
 
 compose-up: ## Run docker-compose up
 	docker-compose -f docker/compose.yml up -d --force-recreate
 
 compose-down: ## Run docker-compose down
 	docker-compose -f docker/compose.yml down
+
+prune: ## Prune docker
+	docker system prune -a ;\
+	docker volume ls -q | xargs docker volume rm

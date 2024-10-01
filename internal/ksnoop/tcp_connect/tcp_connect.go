@@ -82,8 +82,8 @@ func TcpConnect(ctx context.Context) {
 
 		hostInfo, err := utils.GetIPInfo(intToIP(event.Daddr).String())
 		if err != nil {
-			log.Warning("getting IP info: %s", err)
-			continue
+			log.Debug("error getting IP info from ip.guide: %s", err)
+			hostInfo.Network.AutonomousSystem.Organization = "unknown"
 		}
 
 		log.Info("new connection",
@@ -91,7 +91,11 @@ func TcpConnect(ctx context.Context) {
 			devstdout.Argument("src_addr", intToIP(event.Saddr)),
 			devstdout.Argument("src_port", event.Sport),
 			devstdout.Argument("dst_addr", intToIP(event.Daddr)),
-			devstdout.Argument("host", hostInfo.AS),
+			devstdout.Argument("dst_port", event.Dport),
+			devstdout.Argument("host", hostInfo.Network.AutonomousSystem.Organization),
+			devstdout.Argument("country", hostInfo.Location.Country),
+			devstdout.Argument("latitude", hostInfo.Location.Latitude),
+			devstdout.Argument("longitude", hostInfo.Location.Longitude),
 		)
 	}
 }

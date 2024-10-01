@@ -23,12 +23,17 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=grafana
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
-      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ENABLED=false
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+      - GF_FEATURE_TOGGLES_ENABLE=accessControlOnCall lokiLogsDataplane
+      - GF_INSTALL_PLUGINS=https://storage.googleapis.com/integration-artifacts/grafana-lokiexplore-app/grafana-lokiexplore-app-latest.zip;grafana-lokiexplore-app
     volumes:
-      - grafana-datasources:/etc/grafana/provisioning/datasources
-      - grafana-storage:/var/lib/grafana
+      # - grafana-datasources:/etc/grafana/provisioning/datasources
+      # - grafana-storage:/var/lib/grafana
       - ./data-sources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./plugins.yaml:/etc/grafana/provisioning/plugins/app.yaml
+      - ./dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
 
   loki:
       image: docker.io/grafana/loki:latest

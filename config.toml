@@ -10,7 +10,7 @@
 
 
 [log]
-level = "INFO" # info, debug, warn, error, success, trace
+level = "debug" # info, debug, warn, error, success, trace
 type = "json" # json, console, pretty
 
 

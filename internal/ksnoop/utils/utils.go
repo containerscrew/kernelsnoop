@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os/user"
+	"reflect"
 	"strconv"
 )
 
@@ -38,19 +39,52 @@ func IpLookup(ip string) (string, error) {
 	return "Unknown", nil
 }
 
-// Structure to hold the IP information
+// Struct to hold the IP information from ip.guide
 type IPInfo struct {
-	Status  string `json:"status"`
-	AS      string `json:"as"`
-	Query   string `json:"query"`
-	Country string `json:"country"`
-	Region  string `json:"region"`
-	City    string `json:"city"`
+	IP      string   `json:"ip"`
+	Network Network  `json:"network"`
+	Location Location `json:"location"`
+}
+
+type Network struct {
+	CIDR             string          `json:"cidr"`
+	Hosts            Hosts           `json:"hosts"`
+	AutonomousSystem AutonomousSystem `json:"autonomous_system"`
+}
+
+type Hosts struct {
+	Start string `json:"start"`
+	End   string `json:"end"`
+}
+
+type AutonomousSystem struct {
+	ASN          int    `json:"asn"`
+	Name         string `json:"name"`
+	Organization string `json:"organization"`
+	Country      string `json:"country"`
+	RIR          string `json:"rir"`
+}
+
+type Location struct {
+	City      string  `json:"city"`
+	Country   string  `json:"country"`
+	Timezone  string  `json:"timezone"`
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+}
+
+// Sometimes the location field is empty
+var defaultLocation = Location{
+	City:      "Unknown",
+	Country:   "Unknown",
+	Timezone:  "UTC",
+	Latitude:  0.0,
+	Longitude: 0.0,
 }
 
 // GetIpINfo returns the "as" field from the ip-api.com API.
 func GetIPInfo(ip string) (IPInfo, error) {
-	url := fmt.Sprintf("http://ip-api.com/json/%s", ip)
+	url := fmt.Sprintf("https://ip.guide/%s", ip)
 	resp, err := http.Get(url)
 	if err != nil {
 		return IPInfo{}, err
@@ -66,10 +100,11 @@ func GetIPInfo(ip string) (IPInfo, error) {
 		return IPInfo{}, err
 	}
 
-	// Check if the API returned a success status
-	if info.Status != "success" {
-		return IPInfo{}, fmt.Errorf("failed to get info for IP: %s", ip)
+	// If location is empty
+	if reflect.DeepEqual(info.Location, Location{}) {
+		info.Location = defaultLocation
 	}
 
+	// Check if the API returned a success status
 	return info, nil
 }
