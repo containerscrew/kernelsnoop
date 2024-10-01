@@ -24,6 +24,12 @@ I am practicing everything I learned in [this book](https://isovalent.com/books/
 
 ...pending to add
 
+By the moment, clone the repo and run:
+
+```bash
+make compose-up-build
+```
+
 # Available tools
 
 * Shell readline: read every user command for bash, zsh and sh.
