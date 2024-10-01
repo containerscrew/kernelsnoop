@@ -30,6 +30,10 @@ By the moment, clone the repo and run:
 make compose-up-build
 ```
 
+Once the containers are running, visit **http://127.0.0.1:3000** or `docker logs -f kernelsnoop`.
+
+> usernames/password for every tool in `docker/compose.yml`
+
 # Available tools
 
 * Shell readline: read every user command for bash, zsh and sh.
