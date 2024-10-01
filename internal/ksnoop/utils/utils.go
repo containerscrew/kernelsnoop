@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"os/user"
 	"reflect"
 	"strconv"
@@ -107,4 +108,56 @@ func GetIPInfo(ip string) (IPInfo, error) {
 
 	// Check if the API returned a success status
 	return info, nil
+}
+
+
+// virustotal check for the IP address
+// VirusTotalResponse represents the response from the VirusTotal API
+type VirusTotalResponse struct {
+	Data struct {
+		Attributes struct {
+			LastAnalysisStats struct {
+				Harmless   int `json:"harmless"`
+				Malicious  int `json:"malicious"`
+				Suspicious int `json:"suspicious"`
+				Undetected int `json:"undetected"`
+				Timeout    int `json:"timeout"`
+			} `json:"last_analysis_stats"`
+		} `json:"attributes"`
+	} `json:"data"`
+}
+
+// GetVirusTotalInfo retrieves information about an IP address from VirusTotal
+func GetVirusTotalInfo(ip string) (VirusTotalResponse, error) {
+	apiKey := os.Getenv("VIRUSTOTAL_API_KEY")
+	if apiKey == "" {
+		return VirusTotalResponse{}, fmt.Errorf("VIRUSTOTAL_API_KEY environment variable not set")
+	}
+
+	url := fmt.Sprintf("https://www.virustotal.com/api/v3/ip_addresses/%s", ip)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return VirusTotalResponse{}, err
+	}
+
+	req.Header.Set("accept", "application/json")
+	req.Header.Set("x-apikey", apiKey)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return VirusTotalResponse{}, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return VirusTotalResponse{}, fmt.Errorf("API request failed with status: %s", resp.Status)
+	}
+
+	var vtResponse VirusTotalResponse
+	if err := json.NewDecoder(resp.Body).Decode(&vtResponse); err != nil {
+		return VirusTotalResponse{}, err
+	}
+
+	return vtResponse, nil
 }

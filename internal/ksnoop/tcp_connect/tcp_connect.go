@@ -86,6 +86,11 @@ func TcpConnect(ctx context.Context) {
 			hostInfo.Network.AutonomousSystem.Organization = "unknown"
 		}
 
+		virustotalInfo, err := utils.GetVirusTotalInfo(intToIP(event.Daddr).String())
+		if err != nil {
+			log.Debug("error getting VirusTotal info: %s", err)
+		}
+
 		log.Info("new connection",
 			devstdout.Argument("comm", string(event.Comm[:bytes.IndexByte(event.Comm[:], 0)])),
 			devstdout.Argument("src_addr", intToIP(event.Saddr)),
@@ -96,6 +101,7 @@ func TcpConnect(ctx context.Context) {
 			devstdout.Argument("country", hostInfo.Location.Country),
 			devstdout.Argument("latitude", hostInfo.Location.Latitude),
 			devstdout.Argument("longitude", hostInfo.Location.Longitude),
+			devstdout.Argument("virustotal", virustotalInfo),
 		)
 	}
 }

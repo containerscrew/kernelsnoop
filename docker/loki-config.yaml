@@ -6,7 +6,11 @@ server:
 
 common:
   instance_addr: 127.0.0.1
-  path_prefix: /tmp/loki
+  path_prefix: loki
+  storage:
+    s3:
+      bucketnames: loki
+      region: eu-central-1
   # storage:
   #   filesystem:
   #     chunks_directory: /tmp/loki/chunks
@@ -45,7 +49,6 @@ schema_config:
       index:
         prefix: index_
         period: 24h
-
 
 storage_config:
   aws:

@@ -9,6 +9,8 @@ services:
       - CAP_BPF
       - CAP_PERFMON
     container_name: kernelsnoop
+    environment:
+      VIRUSTOTAL_API_KEY: /run/secrets/virustotal-api-key
     labels:
       logging: "promtail"
       logging_jobname: "containerlogs"
@@ -45,7 +47,6 @@ services:
         - 3100:3100
       volumes:
         - ./loki-config.yaml:/etc/loki/loki-config.yaml
-        - loki-data:/data
       command: -config.file=/etc/loki/loki-config.yaml
 
   minio:
@@ -70,18 +71,13 @@ services:
     container_name: promtail
     command: -config.file=/etc/promtail/promtail-config.yaml
 
-# secrets:
-#   influxdb2-admin-username:
-#     file: .env/.env.influxdb2-admin-username
-#   influxdb2-admin-password:
-#     file: .env/.env.influxdb2-admin-password
-#   influxdb2-admin-token:
-#     file: .env/.env.influxdb2-admin-token
+secrets:
+  virustotal-api-key:
+    file: .env/.env-virus-total-api-key
 
 volumes:
   # loki:
   # promtail:
   #grafana-datasources:
   minio-data:
-  loki-data:
   grafana-storage:
