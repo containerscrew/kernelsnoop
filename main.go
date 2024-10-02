@@ -5,7 +5,7 @@ import (
 
 	devstdout "github.com/containerscrew/devstdout/pkg"
 	"github.com/containerscrew/kernelsnoop/internal/config"
-	ksnoop_tcp_connect "github.com/containerscrew/kernelsnoop/internal/ksnoop/tcp_connect"
+	ksnoop_file_permissions "github.com/containerscrew/kernelsnoop/internal/ksnoop/file_permissions"
 )
 
 func main() {
@@ -23,5 +23,6 @@ func main() {
 
 	ctx := context.WithValue(context.Background(), "log", log)
 
-	ksnoop_tcp_connect.TcpConnect(ctx)
+	//ksnoop_tcp_connect.TcpConnect(ctx)
+	ksnoop_file_permissions.FilePermissions(ctx)
 }

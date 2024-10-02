@@ -82,6 +82,7 @@ sudo cat /sys/kernel/debug/tracing/events/ext4/ext4_free_inode/format
 
 ```
 curl -sL ip.guide/bulk/asns.csv
+sudo bpftrace -l | grep cap_capable
 ```
 
 ```
@@ -107,3 +108,5 @@ curl -sL ip.guide/bulk/asns.csv
 * https://docs.fluentbit.io/manual/pipeline/outputs/influxdb
 * https://docs.influxdata.com/influxdb/v2/install/use-docker-compose/
 * https://github.com/ruanbekker/docker-promtail-loki/tree/main
+* https://docs.cilium.io/en/latest/bpf/
+* https://github.com/iovisor/bcc/tree/master/docs
