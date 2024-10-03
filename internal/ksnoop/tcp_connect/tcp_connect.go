@@ -7,9 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/cilium/ebpf/link"
 	"github.com/cilium/ebpf/ringbuf"
