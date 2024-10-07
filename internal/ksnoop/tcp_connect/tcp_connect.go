@@ -12,7 +12,7 @@ import (
 	"github.com/cilium/ebpf/ringbuf"
 	"github.com/cilium/ebpf/rlimit"
 	devstdout "github.com/containerscrew/devstdout/pkg"
-	"github.com/containerscrew/kernelsnoop/internal/ksnoop/utils"
+	"github.com/containerscrew/kernelsnoop/internal/ipchecker"
 )
 
 //go:generate go run github.com/cilium/ebpf/cmd/bpf2go -type event  bpf ./tcp_connect.bpf.c -- -I../headers
@@ -77,10 +77,20 @@ func TcpConnect(ctx context.Context) {
 			continue
 		}
 
-		hostInfo, err := utils.GetIPInfo(intToIP(event.Daddr).String())
-		if err != nil {
-			log.Debug("error getting IP info from ip.guide: %s", err)
-			hostInfo.Network.AutonomousSystem.Organization = "unknown"
+		var hostInfo ipchecker.GeoLocation
+
+		// Get IP geolocation info
+		if ipchecker.PrivateIPCheck(intToIP(event.Daddr).String()) {
+			log.Warning("private address will not be geolocated")
+			continue
+		} else {
+			hostInfo, err = ipchecker.GetIPInfo(intToIP(event.Daddr).String())
+			if err != nil {
+				log.Error("error getting IP geolocation",
+				devstdout.Argument("error", err),
+				devstdout.Argument("ip", intToIP(event.Daddr).String()),
+			)
+			}
 		}
 
 		// virustotalInfo, err := utils.GetVirusTotalInfo(intToIP(event.Daddr).String())
@@ -94,10 +104,10 @@ func TcpConnect(ctx context.Context) {
 			devstdout.Argument("src_port", event.Sport),
 			devstdout.Argument("dst_addr", intToIP(event.Daddr)),
 			devstdout.Argument("dst_port", event.Dport),
-			devstdout.Argument("host", hostInfo.Network.AutonomousSystem.Organization),
-			devstdout.Argument("country", hostInfo.Location.Country),
-			devstdout.Argument("latitude", hostInfo.Location.Latitude),
-			devstdout.Argument("longitude", hostInfo.Location.Longitude),
+			devstdout.Argument("host", hostInfo.As),
+			devstdout.Argument("country", hostInfo.Country),
+			devstdout.Argument("latitude", hostInfo.Lat),
+			devstdout.Argument("longitude", hostInfo.Lon),
 			// devstdout.Argument("virustotal", virustotalInfo),
 		)
 	}

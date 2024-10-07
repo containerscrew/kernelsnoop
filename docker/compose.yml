@@ -5,6 +5,9 @@ services:
       context: ../
       dockerfile: docker/Dockerfile
     restart: unless-stopped
+    networks:
+      - kernelsnoop
+      - iproxy
     cap_add:
       - CAP_NET_ADMIN
       - CAP_BPF
@@ -22,6 +25,8 @@ services:
     ports:
       - 3000:3000
     restart: unless-stopped
+    networks:
+      - kernelsnoop
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=grafana
@@ -43,6 +48,8 @@ services:
       image: docker.io/grafana/loki:latest
       container_name: loki
       restart: unless-stopped
+      networks:
+        - kernelsnoop
       depends_on:
         - minio
       ports:
@@ -55,6 +62,8 @@ services:
     image: docker.io/bitnami/minio:latest
     container_name: minio
     restart: unless-stopped
+    networks:
+      - kernelsnoop
     ports:
       - '9000:9000'
       - '9001:9001'
@@ -68,6 +77,8 @@ services:
   promtail:
     image: grafana/promtail:latest
     restart: unless-stopped
+    networks:
+      - kernelsnoop
     volumes:
       - ./promtail-config.yaml:/etc/promtail/promtail-config.yaml
       - /var/lib/docker/:/var/lib/docker:ro
@@ -85,3 +96,11 @@ volumes:
   #grafana-datasources:
   minio-data:
   grafana-storage:
+
+networks:
+  kernelsnoop:
+    driver: bridge
+    external: false
+  iproxy:
+    external: true
+    driver: bridge
