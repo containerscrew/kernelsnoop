@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	devstdout "github.com/containerscrew/devstdout/pkg"
 	"github.com/containerscrew/kernelsnoop/internal/config"
-	ksnoop_tcp_connect "github.com/containerscrew/kernelsnoop/internal/ksnoop/tcp_connect"
+	"github.com/containerscrew/kernelsnoop/internal/core"
 )
 
 func main() {
@@ -23,7 +24,11 @@ func main() {
 
 	ctx := context.WithValue(context.Background(), "log", log)
 
-	ksnoop_tcp_connect.TcpConnect(ctx)
+	// Reset memory lock limit
+	if err := core.RemoveMemLock(ctx); err != nil {
+		log.Error(fmt.Sprintf("failed to remove memlock rlimit: %v. Consider using sudo or give necessary capabilities to the program", err))
+	}
+
 
 	//ksnoop_file_permissions.FilePermissions(ctx)
 }
