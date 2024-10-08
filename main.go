@@ -7,6 +7,7 @@ import (
 	devstdout "github.com/containerscrew/devstdout/pkg"
 	"github.com/containerscrew/kernelsnoop/internal/config"
 	"github.com/containerscrew/kernelsnoop/internal/core"
+	"github.com/containerscrew/kernelsnoop/internal/programs/net_track"
 )
 
 func main() {
@@ -29,6 +30,6 @@ func main() {
 		log.Error(fmt.Sprintf("failed to remove memlock rlimit: %v. Consider using sudo or give necessary capabilities to the program", err))
 	}
 
-
+	net_track.NetworkTrack(ctx)
 	//ksnoop_file_permissions.FilePermissions(ctx)
 }

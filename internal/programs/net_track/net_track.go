@@ -14,7 +14,7 @@ import (
 	"github.com/containerscrew/kernelsnoop/internal/ipchecker"
 )
 
-//go:generate go run github.com/cilium/ebpf/cmd/bpf2go -type event bpf ./tcp_connect.bpf.c -- -I../../headers
+//go:generate go run github.com/cilium/ebpf/cmd/bpf2go -type event bpf ./net_track.bpf.c -- -I../../headers
 
 func NetworkTrack(ctx context.Context) {
 	// Retrieve the devstdout from the context
@@ -63,15 +63,15 @@ func NetworkTrack(ctx context.Context) {
 		var hostInfo ipchecker.GeoLocation
 
 		// Get IP geolocation info
-		if ipchecker.PrivateIPCheck(intToIP(event.Daddr).String()) {
+		if ipchecker.PrivateIPCheck(intToIP(event.V4.Daddr).String()) {
 			log.Warning("private address will not be geolocated")
 			continue
 		} else {
-			hostInfo, err = ipchecker.GetIPInfo(intToIP(event.Daddr).String())
+			hostInfo, err = ipchecker.GetIPInfo(intToIP(event.V4.Daddr).String())
 			if err != nil {
 				log.Error("error getting IP geolocation",
 				devstdout.Argument("error", err),
-				devstdout.Argument("ip", intToIP(event.Daddr).String()),
+				devstdout.Argument("ip", intToIP(event.V4.Daddr).String()),
 			)
 			}
 		}
@@ -82,11 +82,11 @@ func NetworkTrack(ctx context.Context) {
 		// }
 
 		log.Info("new connection",
-			devstdout.Argument("comm", string(event.Comm[:bytes.IndexByte(event.Comm[:], 0)])),
-			devstdout.Argument("src_addr", intToIP(event.Saddr)),
-			devstdout.Argument("src_port", event.Sport),
-			devstdout.Argument("dst_addr", intToIP(event.Daddr)),
-			devstdout.Argument("dst_port", event.Dport),
+			devstdout.Argument("comm", string(event.V4.Comm[:bytes.IndexByte(event.V4.Comm[:], 0)])),
+			devstdout.Argument("src_addr", intToIP(event.V4.Saddr)),
+			devstdout.Argument("src_port", event.V4.Sport),
+			devstdout.Argument("dst_addr", intToIP(event.V4.Daddr)),
+			devstdout.Argument("dst_port", event.V4.Dport),
 			devstdout.Argument("host", hostInfo.As),
 			devstdout.Argument("country", hostInfo.Country),
 			devstdout.Argument("latitude", hostInfo.Lat),
