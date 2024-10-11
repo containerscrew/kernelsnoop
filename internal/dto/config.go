@@ -1,4 +1,4 @@
-package config
+package dto
 
 import (
 	"io"
@@ -12,9 +12,11 @@ type Config struct {
 		Level string `toml:"level"`
 		Type  string `toml:"type"`
 	}
-	Syscall struct {
-		Enabled bool `toml:"enabled"`
-		SysCalls []string `toml:"syscalls"`
+	Networking struct {
+		Enable_udp_tracing bool `toml:"enable_udp_tracing"`
+		Enable_tcp_tracing bool `toml:"enable_tcp_tracing"`
+		Udp_filter_ports []string `toml:"udp_filter_ports"`
+		Tcp_filter_ports []string `toml:"tcp_filter_ports"`
 	}
 }
 

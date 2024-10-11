@@ -1,19 +1,9 @@
-# [agent]
-# daemonize = true
-# stdout_path = "/tmp/kernelsnoop.log"
-# stdeer_path = "/tmp/kernelsnoop.log"
-# pid_file = "/tmp/kernelsnoop.pid"
-
-
-# [notifications]
-# enabled = true
-
-
 [log]
 level = "debug" # info, debug, warn, error, success, trace
 type = "json" # json, console, pretty
 
-
-[syscall]
-enabled = true
-syscalls = ["sys_connect", "sys_execve" ]
+[networking]
+enable_udp_tracing = true
+enable_tcp_tracing = true
+udp_filter_ports = ["53"]
+tcp_filter_ports = ["80", "443"]

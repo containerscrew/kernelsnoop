@@ -14,13 +14,14 @@ import (
 
 type bpfEvent struct {
 	V4 struct {
-		Comm  [16]uint8
-		Sport uint16
-		Dport uint16
-		Saddr uint32
-		Daddr uint32
+		Comm     [16]uint8
+		Sport    uint16
+		Dport    uint16
+		Saddr    uint32
+		Daddr    uint32
+		Protocol uint8
+		_        [3]byte
 	}
-	_ [24]byte
 }
 
 // loadBpf returns the embedded CollectionSpec for bpf.
@@ -65,6 +66,7 @@ type bpfSpecs struct {
 // It can be passed ebpf.CollectionSpec.Assign.
 type bpfProgramSpecs struct {
 	TcpConnect *ebpf.ProgramSpec `ebpf:"tcp_connect"`
+	UdpSendmsg *ebpf.ProgramSpec `ebpf:"udp_sendmsg"`
 }
 
 // bpfMapSpecs contains maps before they are loaded into the kernel.
@@ -107,11 +109,13 @@ func (m *bpfMaps) Close() error {
 // It can be passed to loadBpfObjects or ebpf.CollectionSpec.LoadAndAssign.
 type bpfPrograms struct {
 	TcpConnect *ebpf.Program `ebpf:"tcp_connect"`
+	UdpSendmsg *ebpf.Program `ebpf:"udp_sendmsg"`
 }
 
 func (p *bpfPrograms) Close() error {
 	return _BpfClose(
 		p.TcpConnect,
+		p.UdpSendmsg,
 	)
 }
 

@@ -5,14 +5,14 @@ import (
 	"fmt"
 
 	devstdout "github.com/containerscrew/devstdout/pkg"
-	"github.com/containerscrew/kernelsnoop/internal/config"
 	"github.com/containerscrew/kernelsnoop/internal/core"
+	"github.com/containerscrew/kernelsnoop/internal/dto"
 	"github.com/containerscrew/kernelsnoop/internal/programs/net_track"
 )
 
 func main() {
 	// Read config file
-	config, err := config.ReadConfigFile()
+	config, err := dto.ReadConfigFile()
 	if err != nil {
 		panic(err)
 	}
@@ -23,7 +23,14 @@ func main() {
 
 	log.Info("Starting kernelsnoop")
 
-	ctx := context.WithValue(context.Background(), "log", log)
+		// Create a struct to hold both log and config
+	contextData := &dto.ContextData{
+		Log:    log,
+		Config: &config,
+	}
+
+	// Add the contextData struct to the context
+	ctx := context.WithValue(context.Background(), "contextData", contextData)
 
 	// Reset memory lock limit
 	if err := core.RemoveMemLock(ctx); err != nil {
