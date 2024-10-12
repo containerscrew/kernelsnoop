@@ -29,7 +29,7 @@ func GetUsername(uid uint32) string {
 }
 
 // IpResolver return the FQDN of an IP address
-func IpLookup(ip string) (string, error) {
+func IPLookup(ip string) (string, error) {
 	fqdn, err := net.LookupAddr(ip)
 	if err != nil {
 		return "Unknown", err
@@ -42,14 +42,14 @@ func IpLookup(ip string) (string, error) {
 
 // IpInfo represents the response from the ip-api.com API
 type IPInfo struct {
-	IP      string   `json:"ip"`
-	Network Network  `json:"network"`
+	IP       string   `json:"ip"`
+	Network  Network  `json:"network"`
 	Location Location `json:"location"`
 }
 
 type Network struct {
-	CIDR             string          `json:"cidr"`
-	Hosts            Hosts           `json:"hosts"`
+	CIDR             string           `json:"cidr"`
+	Hosts            Hosts            `json:"hosts"`
 	AutonomousSystem AutonomousSystem `json:"autonomous_system"`
 }
 
@@ -109,7 +109,6 @@ func GetIPInfo(ip string) (IPInfo, error) {
 	// Check if the API returned a success status
 	return info, nil
 }
-
 
 // virustotal check for the IP address
 // VirusTotalResponse represents the response from the VirusTotal API

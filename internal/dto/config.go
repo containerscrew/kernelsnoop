@@ -13,10 +13,10 @@ type Config struct {
 		Type  string `toml:"type"`
 	}
 	Networking struct {
-		Enable_udp_tracing bool `toml:"enable_udp_tracing"`
-		Enable_tcp_tracing bool `toml:"enable_tcp_tracing"`
-		Udp_filter_ports []string `toml:"udp_filter_ports"`
-		Tcp_filter_ports []string `toml:"tcp_filter_ports"`
+		EnableUDPTracing bool     `toml:"enable_udp_tracing"`
+		EnableTCPTracing bool     `toml:"enable_tcp_tracing"`
+		UDPFilterPorts   []string `toml:"udp_filter_ports"`
+		TCPFilterPorts   []string `toml:"tcp_filter_ports"`
 	}
 }
 

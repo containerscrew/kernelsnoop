@@ -2,7 +2,7 @@
 
 // This was an intention to separate the code to avoid code duplication, but it was not used in the initial version.
 
-// package core
+package oldcore
 
 // import (
 // 	"fmt"

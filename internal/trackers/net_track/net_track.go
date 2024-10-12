@@ -1,4 +1,4 @@
-package net_track
+package nettrack
 
 import (
 	"bytes"
@@ -9,56 +9,46 @@ import (
 
 	"github.com/cilium/ebpf/link"
 	"github.com/cilium/ebpf/ringbuf"
-	devstdout "github.com/containerscrew/devstdout/pkg"
+	"github.com/containerscrew/kernelsnoop/internal/core"
 	"github.com/containerscrew/kernelsnoop/internal/dto"
+	"github.com/containerscrew/kernelsnoop/internal/monitoring"
 )
 
 //go:generate go run github.com/cilium/ebpf/cmd/bpf2go -type event bpf ./net_track.bpf.c -- -I../../headers
 
 func NetworkTrack(ctx context.Context) {
 	// Retrieve the context data (log and config) from the context
-	contextData, _ := ctx.Value("contextData").(*dto.ContextData)
-	log := contextData.Log
-	config := contextData.Config
+	contextData := core.GetContextData(ctx)
 
 	// Load pre-compiled eBPF programs and maps into the kernel
-	objs := bpfObjects{}
-	if err := loadBpfObjects(&objs, nil); err != nil {
-		log.Error(fmt.Sprintf("Error loading eBPF objects: %v", err))
+	objs, err := loadEBPFObjects(contextData)
+	if err != nil {
 		return
 	}
 	defer objs.Close()
 
 	// Conditionally attach TCP tracing if enabled in config.toml
-	if config.Networking.Enable_tcp_tracing {
-		linkTCP, err := link.AttachTracing(link.TracingOptions{
-			Program: objs.bpfPrograms.TcpConnect,
-		})
-		if err != nil {
-			log.Error(fmt.Sprintf("Failed to attach TCP tracing link: %v", err))
-		} else {
-			defer linkTCP.Close()
-            log.Info("tcp tracing enabled")
-		}
-	}
-
-	// Conditionally attach UDP tracing if enabled in config.toml
-	if config.Networking.Enable_udp_tracing {
-		linkUDP, err := link.AttachTracing(link.TracingOptions{
-			Program: objs.bpfPrograms.UdpSendmsg,
-		})
-		if err != nil {
-			log.Error(fmt.Sprintf("Failed to attach UDP tracing link: %v", err))
-		} else {
-			defer linkUDP.Close()
-            log.Info("udp tracing enabled")
-		}
-	}
-
-	// Create a ring buffer reader to receive events
-	ringBufferReader, err := ringbuf.NewReader(objs.bpfMaps.Events)
+	linkTCP, err := attachTCPTracing(contextData, objs)
 	if err != nil {
-		log.Error(fmt.Sprintf("Failed to create ring buffer reader: %v", err))
+		return
+	}
+
+	if linkTCP != nil {
+		defer linkTCP.Close()
+	}
+
+	linkUDP, err := attachUDPTracing(contextData, objs)
+
+	if err != nil {
+		return
+	}
+
+	if linkUDP != nil {
+		defer linkUDP.Close()
+	}
+
+	ringBufferReader, err := createRingBufferReader(contextData, objs)
+	if err != nil {
 		return
 	}
 	defer ringBufferReader.Close()
@@ -69,39 +59,107 @@ func NetworkTrack(ctx context.Context) {
 		// Read an event from the ring buffer
 		record, err := ringBufferReader.Read()
 		if err != nil {
-			log.Warning(fmt.Sprintf("Error reading from ring buffer: %v", err))
+			contextData.Log.Warning(fmt.Sprintf("Error reading from ring buffer: %v", err))
 			continue
 		}
 
 		// Parse the raw event data into the bpfEvent struct
 		if err := binary.Read(bytes.NewBuffer(record.RawSample), binary.BigEndian, &event); err != nil {
-			log.Warning(fmt.Sprintf("Error parsing ring buffer event: %v", err))
+			contextData.Log.Warning(fmt.Sprintf("Error parsing ring buffer event: %v", err))
 			continue
 		}
 
-		// Apply port filters for TCP/UDP based on the config
-		if event.V4.Protocol == 6 && config.Networking.Enable_tcp_tracing { // TCP
-			if shouldTrackPort(config.Networking.Tcp_filter_ports, event.V4.Dport) {
-				log.Info("New TCP connection",
-					devstdout.Argument("comm", string(event.V4.Comm[:bytes.IndexByte(event.V4.Comm[:], 0)])),
-					devstdout.Argument("src_addr", intToIP(event.V4.Saddr)),
-					devstdout.Argument("src_port", event.V4.Sport),
-					devstdout.Argument("dst_addr", intToIP(event.V4.Daddr)),
-					devstdout.Argument("dst_port", event.V4.Dport),
-				)
-			}
-		} else if event.V4.Protocol == 17 && config.Networking.Enable_udp_tracing { // UDP
-			if shouldTrackPort(config.Networking.Udp_filter_ports, event.V4.Dport) {
-				log.Info("New UDP connection",
-					devstdout.Argument("comm", string(event.V4.Comm[:bytes.IndexByte(event.V4.Comm[:], 0)])),
-					devstdout.Argument("src_addr", intToIP(event.V4.Saddr)),
-					devstdout.Argument("src_port", event.V4.Sport),
-					devstdout.Argument("dst_addr", intToIP(event.V4.Daddr)),
-					devstdout.Argument("dst_port", event.V4.Dport),
-				)
-			}
+		// Handle the event
+		handleEvent(contextData, &event)
+	}
+}
+
+// handleEvent processes a single event and updates Prometheus metrics
+func handleEvent(contextData *dto.ContextData, event *bpfEvent) {
+	if event.V4.Protocol == 6 && contextData.Config.Networking.EnableTCPTracing { // TCP
+		if shouldTrackPort(contextData.Config.Networking.TCPFilterPorts, event.V4.Dport) {
+			monitoring.TrackTCPEvent(
+				intToIP(event.V4.Saddr).String(),
+				intToIP(event.V4.Daddr).String(),
+				fmt.Sprintf("%d", event.V4.Sport),
+				fmt.Sprintf("%d", event.V4.Dport),
+				string(event.V4.Comm[:bytes.IndexByte(event.V4.Comm[:], 0)]),
+			)
+		}
+	} else if event.V4.Protocol == 17 && contextData.Config.Networking.EnableUDPTracing { // UDP
+		if shouldTrackPort(contextData.Config.Networking.UDPFilterPorts, event.V4.Dport) {
+			monitoring.TrackUDPEvent(
+				intToIP(event.V4.Saddr).String(),
+				intToIP(event.V4.Daddr).String(),
+				fmt.Sprintf("%d", event.V4.Sport),
+				fmt.Sprintf("%d", event.V4.Dport),
+				string(event.V4.Comm[:bytes.IndexByte(event.V4.Comm[:], 0)]),
+			)
 		}
 	}
+}
+
+// logEvent logs the details of a TCP/UDP connection event
+// func logEvent(contextData *dto.ContextData, protocol string, event *bpfEvent) {
+// 	contextData.Log.Info(fmt.Sprintf("New %s connection", protocol),
+// 		devstdout.Argument("comm", string(event.V4.Comm[:bytes.IndexByte(event.V4.Comm[:], 0)])),
+// 		devstdout.Argument("src_addr", intToIP(event.V4.Saddr)),
+// 		devstdout.Argument("src_port", event.V4.Sport),
+// 		devstdout.Argument("dst_addr", intToIP(event.V4.Daddr)),
+// 		devstdout.Argument("dst_port", event.V4.Dport),
+// 	)
+// }
+
+// Create a ring buffer reader
+func createRingBufferReader(contextData *dto.ContextData, objs *bpfObjects) (*ringbuf.Reader, error) {
+	ringBufferReader, err := ringbuf.NewReader(objs.bpfMaps.Events)
+	if err != nil {
+		contextData.Log.Error(fmt.Sprintf("Failed to create ring buffer reader: %v", err))
+		return nil, err
+	}
+	return ringBufferReader, nil
+}
+
+// Attach TCP tracing if enabled
+func attachTCPTracing(contextData *dto.ContextData, objs *bpfObjects) (link.Link, error) {
+	if contextData.Config.Networking.EnableTCPTracing {
+		linkTCP, err := link.AttachTracing(link.TracingOptions{
+			Program: objs.bpfPrograms.TcpConnect,
+		})
+		if err != nil {
+			contextData.Log.Error(fmt.Sprintf("Failed to attach TCP tracing link: %v", err))
+			return nil, err
+		}
+		contextData.Log.Info("tcp tracing enabled")
+		return linkTCP, nil
+	}
+	return nil, nil
+}
+
+// Attach UDP tracing if enabled
+func attachUDPTracing(contextData *dto.ContextData, objs *bpfObjects) (link.Link, error) {
+	if contextData.Config.Networking.EnableUDPTracing {
+		linkUDP, err := link.AttachTracing(link.TracingOptions{
+			Program: objs.bpfPrograms.UdpSendmsg,
+		})
+		if err != nil {
+			contextData.Log.Error(fmt.Sprintf("Failed to attach UDP tracing link: %v", err))
+			return nil, err
+		}
+		contextData.Log.Info("udp tracing enabled")
+		return linkUDP, nil
+	}
+	return nil, nil
+}
+
+// Load eBPF objects into the kernel
+func loadEBPFObjects(contextData *dto.ContextData) (*bpfObjects, error) {
+	objs := &bpfObjects{}
+	if err := loadBpfObjects(objs, nil); err != nil {
+		contextData.Log.Error(fmt.Sprintf("Error loading eBPF objects: %v", err))
+		return nil, err
+	}
+	return objs, nil
 }
 
 // Check if the event port is in the filter list
