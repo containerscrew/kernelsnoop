@@ -19,7 +19,7 @@ func IntToIP(ipNum uint32) net.IP {
 	return ip
 }
 
-// Function to convert UID to username
+// GetUsername returns the username for a given UID
 func GetUsername(uid uint32) string {
 	usr, err := user.LookupId(strconv.Itoa(int(uid)))
 	if err != nil {
@@ -40,7 +40,7 @@ func IpLookup(ip string) (string, error) {
 	return "Unknown", nil
 }
 
-// Struct to hold the IP information from ip.guide
+// IpInfo represents the response from the ip-api.com API
 type IPInfo struct {
 	IP      string   `json:"ip"`
 	Network Network  `json:"network"`

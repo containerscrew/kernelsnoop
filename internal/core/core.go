@@ -1,7 +1,3 @@
-// 	if err := rlimit.RemoveMemlock(); err != nil {
-// 		log.Error(fmt.Sprintf("failed to remove memlock rlimit: %v. Consider using sudo or give necessary capabilities to the program", err))
-// 	}
-
 package core
 
 import (

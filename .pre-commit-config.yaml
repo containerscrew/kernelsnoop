@@ -20,7 +20,7 @@ repos:
   #     - id: golangci-lint
   #       args: [--fix]
   - repo: https://github.com/containerscrew/mtoc
-    rev: v0.3.2
+    rev: v0.4.1
     hooks:
       - id: mtoc
         args: [ "-e", ".pytest_cache/"]

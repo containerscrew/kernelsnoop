@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"net"
 
@@ -19,7 +18,6 @@ import (
 func NetworkTrack(ctx context.Context) {
 	// Retrieve the context data (log and config) from the context
 	contextData, _ := ctx.Value("contextData").(*dto.ContextData)
-    // Now you have access to both the logger and config
 	log := contextData.Log
 	config := contextData.Config
 
@@ -71,10 +69,6 @@ func NetworkTrack(ctx context.Context) {
 		// Read an event from the ring buffer
 		record, err := ringBufferReader.Read()
 		if err != nil {
-			if errors.Is(err, ringbuf.ErrClosed) {
-				log.Warning("Received signal, closing ring buffer reader...")
-				return
-			}
 			log.Warning(fmt.Sprintf("Error reading from ring buffer: %v", err))
 			continue
 		}

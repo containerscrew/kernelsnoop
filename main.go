@@ -7,7 +7,7 @@ import (
 	devstdout "github.com/containerscrew/devstdout/pkg"
 	"github.com/containerscrew/kernelsnoop/internal/core"
 	"github.com/containerscrew/kernelsnoop/internal/dto"
-	"github.com/containerscrew/kernelsnoop/internal/programs/net_track"
+	"github.com/containerscrew/kernelsnoop/internal/trackers/net_track"
 )
 
 func main() {

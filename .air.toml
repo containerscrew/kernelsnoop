@@ -1,0 +1,10 @@
+# .air.toml
+
+# Set the working directory
+root = "."
+
+# Define which files to watch
+[build]
+cmd = "go run main.go"
+include_ext = ["go", "tpl"]
+exclude_dir = ["vendor", "tmp"]
